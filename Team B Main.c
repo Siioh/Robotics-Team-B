@@ -39,18 +39,21 @@
 
 void pre_auton()
 {
-	// Set bStopTasksBetweenModes to false if you want to keep user created tasks
-	// running between Autonomous and Driver controlled modes. You will need to
-	// manage all user created tasks if set to false.
-	bStopTasksBetweenModes = true;
-
-	// Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
-	// used by the competition include file, for example, you might want
-	// to display your team name on the LCD in this function.
-	// bDisplayCompetitionStatusOnLcd = false;
-
-	// All activities that occur before the competition starts
-	// Example: clearing encoders, setting servo positions, ...
+    // Set bStopTasksBetweenModes to false if you want to keep user created tasks
+    // running between Autonomous and Driver controlled modes. You will need to
+    // manage all user created tasks if set to false.
+    bStopTasksBetweenModes = true;
+    
+    // Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
+    // used by the competition include file, for example, you might want
+    // to display your team name on the LCD in this function.
+    // bDisplayCompetitionStatusOnLcd = false;
+    
+    // All activities that occur before the competition starts
+    // Example: clearing encoders, setting servo positions, ...
+    
+    SensorValue[leftEncoder] = 0; //Reset drivetrain encoders
+    SensorValue[rightEncoder] = 0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -63,44 +66,57 @@ void pre_auton()
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
 
-void armUp() {
-		motor[armLeft] = 63;
-		motor[armRight] = -63;
-	}
-	void armUp() {
-		motor[armLeft] = -63;
-		motor[armRight] = 63;
-	}
+// -- Define Variables --
 
-	void mobileGoalUp() {
-		motor[mobileGoalLeft] = -63;
-		motor[mobileGoalRight] = 63;
-	}
-	void mobileGoalDown() {
-		motor[mobileGoalLeft] = 63;
-		motor[mobileGoalRight] = -63;
-	}
+
+// -- Define Functions --
+void motorsForward(int drivetrainSpeed) { //Start drivetrain
+    motor[rightFront] = drivetrainSpeed;
+    motor[rightBack] = drivetrainSpeed;
+    motor[leftFront] = drivetrainSpeed;
+    motor[leftBack] = drivetrainSpeed;
+}
+
+void armUp() {
+    motor[armLeft] = 63;
+    motor[armRight] = -63;
+}
+
+void armUp() {
+    motor[armLeft] = -63;
+    motor[armRight] = 63;
+}
+
+void mobileGoalUp() {
+    motor[mobileGoalLeft] = -mobileGoalSpeed;
+    motor[mobileGoalRight] = mobileGoalSpeed;
+}
+void mobileGoalDown() {
+    motor[mobileGoalLeft] = mobileGoalSpeed;
+    motor[mobileGoalRight] = -mobileGoalSpeed;
+}
+
+
+// -- Main autonomous task --
 task autonomous()
 {
-	/* 4.25 in dia
-	Circumference = Diameter * pi
-	Circumference = 13.345 in
-	4.5 ft to mobile goal --> 54 inches
-	4.04646
-	1457 deg
-	*/
-
-
-
-	SensorValue[rightEncoder] = 0;
-	SensorValue[leftEncoder] = 0;
-
-	while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) {
-		motor[rightFront] = 127;
-		motor[rightBack] = 127;
-		motor[leftFront] = 127;
-		motor[leftBack] = 127;
-	}
+    /* 4.25 in dia
+     Circumference = Diameter * pi
+     Circumference = 13.345 in
+     4.5 ft to mobile goal --> 54 inches
+     4.04646
+     1457 deg
+     */
+    
+    SensorValue[rightEncoder] = 0; //Reset encoders
+    SensorValue[leftEncoder] = 0;
+    
+    while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) {
+        motor[rightFront] = 127;
+        motor[rightBack] = 127;
+        motor[leftFront] = 127;
+        motor[leftBack] = 127;
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -112,99 +128,119 @@ task autonomous()
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
-int forwardSpeed = 127;
-void motorsForward() { //Function to start drivetrain
-	motor[rightFront] = forwardSpeed;
-	motor[rightBack] = forwardSpeed;
-	motor[leftFront] = forwardSpeed;
-	motor[leftBack] = forwardSpeed;
+
+// -- Define Variables --
+int waitTime = 10; //Time between starting and stopping movement when holding a button
+int speedFactor = 2; //Dampening factor of motors.  Value of controller is divided by this. Ex: 127/2
+int mobileGoalSpeed = 63; //Speed of other motors
+int armSpeed = 63;
+int clawSpeed = 63;
+string botOrientation = "forward"; //Bot starts forward
+
+
+// -- Define Controls --
+string rightDrivetrainCtrl = Ch2;
+string leftDrivetrainCtrl = Ch3;
+string mobileGoalUpCtrl = Btn7U;
+string mobileGoalDownCtrl = Btn7D;
+string armUpCtrl = Btn6U;
+string armDownCtrl = Btn6D;
+string clawOpenCtrl = Btn5U;
+string clawCloseCtrl = Btn5D;
+string rotationSwitchCtrl = ; // **Needs control for
+
+
+// -- Define Functions --
+void motorsStop() { //Stop drivetrain
+    motor[rightFront] = 0;
+    motor[rightBack] = 0;
+    motor[leftFront] = 0;
+    motor[leftBack] = 0;
 }
 
-int waitTime = 10; //Wait time before trying straight
-int degreesRotation = 360; //Degrees of rotation on each encoder
-
-
-
-int increaseSpeed = 20; //Increase speed by this amount
-void leftSpeedIncrease() { //Increase speed of left motors
-	motor[leftFront] = forwardSpeed + increaseSpeed;
-	motor[leftBack] = forwardSpeed + increaseSpeed;
-}
-void rightSpeedIncrease() { //Increase speed of right motors
-	motor[rightFront] = forwardSpeed + increaseSpeed;
-	motor[rightBack] = forwardSpeed + increaseSpeed;
-}
-void motorsStop() { //Function to stop drivetrain
-	motor[rightFront] = 0;
-	motor[rightBack] = 0;
-	motor[leftFront] = 0;
-	motor[leftBack] = 0;
+void allStop() { //Stop all motors
+    motor[rightFront] = 0;
+    motor[rightBack] = 0;
+    motor[leftFront] = 0;
+    motor[leftBack] = 0;
+    motor[mobileGoalLeft] = 0;
+    motor[mobileGoalRight] = 0;
+    motor[armLeft] = 0;
+    motor[armRight] = 0;
+    motor[claw] = 0;
 }
 
+int rotationCalculate(int orientatedSpeed) {
+    if (botOrientation == "forward") { //If forward, orientedSpeed is the normal.  Otherwise, make backwards be forwards.
+        return orientatedSpeed;
+    } else {
+        orientatedSpeed *= -1;
+        return orientatedSpeed;
+    }
+}
+
+void joystickControl() { //Joystick control for drivetrain
+    motor[rightFront] = rotationCalculate(vexRT[rightDrivetrain] / speedFactor);
+    motor[rightBack] = rotationCalculate(vexRT[rightDrivetrain] / speedFactor);
+    motor[leftFront] = rotationCalculate(vexRT[leftDrivetrain] / speedFactor);
+    motor[leftBack] = rotationCalculate(vexRT[leftDrivetrain] / speedFactor);
+}
+
+
+// -- Main User Control --
 task usercontrol()
 {
-	while (1==1) {
-		motor[rightFront] = vexRT[Ch2];
-		motor[rightBack] = vexRT[Ch2];
-		motor[leftFront] = vexRT[Ch3];
-		motor[leftBack] = vexRT[Ch3];
-
-		if (vexRT[Btn7U]) {
-			motor[mobileGoalLeft] = 63;
-			motor[mobileGoalRight] = 63;
-			wait1Msec(10);
-			motor[mobileGoalLeft] = 0;
-			motor[mobileGoalRight] = 0;
-		}
-
-		if (vexRT[Btn7D]) {
-			motor[mobileGoalLeft] = -63;
-			motor[mobileGoalRight] = -63;
-			wait1Msec(10);
-			motor[mobileGoalLeft] = 0;
-			motor[mobileGoalRight] = 0;
-		}
-
-		if (vexRT[Btn6U]) {
-			motor[armLeft] = 63;
-			motor[armRight] = 63;
-			wait1Msec(10);
-			motor[armLeft] = 0;
-			motor[armRight] = 0;
-		}
-		if (vexRT[Btn6D]) {
-			motor[armLeft] = -63;
-			motor[armRight] = -63;
-			wait1Msec(10);
-			motor[armLeft] = 0;
-			motor[armRight] = 0;
-		}
-		if (vexRT[Btn5U]) {
-			motor[claw] = 63;
-			wait1Msec(10);
-			motor[claw] = 0;
-		}
-		if (vexRT[Btn5D]) {
-			motor[claw] = -63;
-			wait1Msec(10);
-			motor[claw] = 0;
-		}
-
-		/*if (vexRT[Btn8D]) { //Practice autonomous
-		motorsForward();
-		while (SensorValue[leftEncoder] <= degreesRotation && SensorValue[rightEncoder] <= degreesRotation) { //While rotations are less than threshold
-		if(SensorValue[leftEncoder] > SensorValue[rightEncoder]) { //Implement self-righting mechanism
-		leftSpeedIncrease();
-		wait1Msec(waitTime);
-		motorsForward();
-		}
-		if(SensorValue[rightEncoder] > SensorValue[leftEncoder]) {
-		rightSpeedIncrease();
-		wait1Msec(waitTime);
-		motorsForward();
-		}
-		}
-		motorsStop();
-		}*/
-	}
+    while (true) {
+        if (vexRT[rotationSwitchCtrl]) { //Swap rotation
+            if(botOrientation == "forward") { //If forward, switch to back.  Otherwise, switch back to forward.
+                botOrientation = "back";
+            } else {
+                botOrientation = "forward";
+            }
+        }
+        
+        if (vexRT[mobileGoalUpCtrl]) { //If control to move mobile goal up, then move it up!
+            motor[mobileGoalLeft] = mobileGoalSpeed;
+            motor[mobileGoalRight] = mobileGoalSpeed;
+            wait1Msec(waitTime);
+            motor[mobileGoalLeft] = 0;
+            motor[mobileGoalRight] = 0;
+        }
+        
+        if (vexRT[mobileGoalDownCtrl]) {
+            motor[mobileGoalLeft] = -mobileGoalSpeed;
+            motor[mobileGoalRight] = -mobileGoalSpeed;
+            wait1Msec(waitTime);
+            motor[mobileGoalLeft] = 0;
+            motor[mobileGoalRight] = 0;
+        }
+        
+        if (vexRT[armUpCtrl]) {
+            motor[armLeft] = rotationCalculate(armSpeed); //May want to reconsider if arm needs to be recalculated for direction
+            motor[armRight] = rotationCalculate(armSpeed);
+            wait1Msec(waitTime);
+            motor[armLeft] = 0;
+            motor[armRight] = 0;
+        }
+        
+        if (vexRT[armDownCtrl]) {
+            motor[armLeft] = -rotationCalculate(armSpeed); // ^^
+            motor[armRight] = -rotationCalculate(armSpeed);
+            wait1Msec(waitTime);
+            motor[armLeft] = 0;
+            motor[armRight] = 0;
+        }
+        
+        if (vexRT[clawOpenCtrl]) {
+            motor[claw] = clawSpeed;
+            wait1Msec(waitTime);
+            motor[claw] = 0;
+        }
+        
+        if (vexRT[clawCloseCtrl]) {
+            motor[claw] = -clawSpeed;
+            wait1Msec(waitTime);
+            motor[claw] = 0;
+        }
+    }
 }
