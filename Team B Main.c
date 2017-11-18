@@ -103,10 +103,10 @@ void motorsForwardAutoStraighten(int drivetrainSpeed) {
  if(currentTimeReading != null) { //If generated a second reading
  leftReadingDiff /= timeDiff; //Calculate velocity of the sides in terms of degrees per ms
  rightReadingDiff /= timeDiff;
- 
+
  abs(leftReadingDiff - rightReadingDiff); //Error of velocities
  }
- 
+
  }
  runTimer = false; //Turn timer off
  }*/
@@ -124,11 +124,11 @@ task checkTimer1() {
      currentTimeReading = time1[T1]; //Take time value
      currentLeftEncoderReading = SensorValue[leftEncoder]; //Take encoder values
      currentRightEncoderReading = SensorValue[rightEncoder];
-     
+
      timeDiff = currentTimeReading - initialTimeReading; //Time diff
      leftReadingDiff = currentLeftEncoderReading - initialLeftEncoderReading; //Encoders diff
      rightReadingDiff = currentRightEncoderReading - initialRightEncoderReading;
-     
+
      ClearTimer[T1]; //Reset Timer
      initialTimeReading = time1[T1]; //Take start time reading
      resetEncoders(); //Reset Encoders
@@ -201,18 +201,18 @@ void pre_auton()
     // running between Autonomous and Driver controlled modes. You will need to
     // manage all user created tasks if set to false.
     bStopTasksBetweenModes = true;
-    
+
     // Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
     // used by the competition include file, for example, you might want
     // to display your team name on the LCD in this function.
     // bDisplayCompetitionStatusOnLcd = false;
-    
+
     // All activities that occur before the competition starts
     // Example: clearing encoders, setting servo positions, ...
-    
+
     resetEncoders();
-    
-    StartTask(checkTimer1); //Start checking the timer
+
+    startTask(checkTimer1); //Start checking the timer
 }
 // -- End Pre-autonomous task --
 
@@ -236,12 +236,19 @@ task autonomous()
      4.04646 rotationss
      1457 degrees
      */
-    
+
     // resetEncoders() performed in pre autonomous
-    while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) { //Move distance to goal
+    /*while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) { //Move distance to goal
         //motorsForward(127);
         //motorsForwardAutoStraighten();
+    }*/
+
+    clearTimer(T1);
+    while (time1[T1] < 7000) {
+    	motorsForward(127);
     }
+    allStop();
+
 }
 // -- End autonomous task --
 
@@ -260,7 +267,7 @@ task autonomous()
 task usercontrol()
 {
     while (true) {
-        
+
         if (vexRT[rotationSwitchCtrl] == 1) { //Swap rotation -- **NEEDS REWORK**
             if(userBotOrientation == "forward") { //If forward, switch to back.  Otherwise, switch back to forward.
                 userBotOrientation = "back";
@@ -268,9 +275,9 @@ task usercontrol()
                 userBotOrientation = "forward";
             }
         }
-        
+
         joystickControl();
-        
+
         if (vexRT[mobileGoalUpCtrl] == 1) {             //If control to move mobile goal up, then move it up!
             motor[mobileGoal] = userMobileGoalSpeed;
         } else if (vexRT[mobileGoalDownCtrl] == 1) {    //Else, check if it should go down
@@ -278,7 +285,7 @@ task usercontrol()
         } else {                                        //If neither up nor down, keep it off.
             motor[mobileGoal] = 0;
         }
-        
+
         if (vexRT[armUpCtrl] == 1) {
             motor[armLeft] = rotationCalculate(userArmSpeed);
             motor[armRight] = rotationCalculate(userArmSpeed);
@@ -289,7 +296,7 @@ task usercontrol()
             motor[armLeft] = 0;
             motor[armRight] = 0;
         }
-        
+
         if (vexRT[clawOpenCtrl] == 1) {
             motor[claw] = userClawSpeed;
         } else if (vexRT[clawCloseCtrl] == 1) {
