@@ -53,134 +53,134 @@ string rotationSwitchCtrl = Btn8D;
 
 // -- Define functions --
 void resetEncoders() {
-    SensorValue[leftEncoder] = 0; //Reset drivetrain encoders
-    SensorValue[rightEncoder] = 0;
+	SensorValue[leftEncoder] = 0; //Reset drivetrain encoders
+	SensorValue[rightEncoder] = 0;
 }
 
 void motorsForward(int drivetrainSpeed) { //Start drivetrain
-    motor[rightFront] = drivetrainSpeed;
-    motor[rightBack] = drivetrainSpeed;
-    motor[leftFront] = drivetrainSpeed;
-    motor[leftBack] = drivetrainSpeed;
+	motor[rightFront] = drivetrainSpeed;
+	motor[rightBack] = drivetrainSpeed;
+	motor[leftFront] = drivetrainSpeed;
+	motor[leftBack] = drivetrainSpeed;
 }
 
 void armUp() {
-    motor[armLeft] = 63;
-    motor[armRight] = -63;
+	motor[armLeft] = 63;
+	motor[armRight] = -63;
 }
 
 void armUp() {
-    motor[armLeft] = -63;
-    motor[armRight] = 63;
+	motor[armLeft] = -63;
+	motor[armRight] = 63;
 }
 
 void mobileGoalUp() {
-    motor[mobileGoal] = userMobileGoalSpeed;
+	motor[mobileGoal] = userMobileGoalSpeed;
 }
 void mobileGoalDown() {
-    motor[mobileGoal] = -userMobileGoalSpeed;
+	motor[mobileGoal] = -userMobileGoalSpeed;
 }
 
 void motorsForwardAutoStraighten(int drivetrainSpeed) {
-    if(SensorValue[rightEncoder] > SensorValue[leftEncoder]) { //If right moved more, slow it.
-        motor[rightFront] = drivetrainSpeed - errorSpeed;
-        motor[rightBack] = drivetrainSpeed - errorSpeed;
-    } else {
-        if(SensorValue[rightEncoder] < SensorValue[leftEncoder]) { //Left moved more?  Slow it.
-            motor[leftFront] = drivetrainSpeed - errorSpeed;
-            motor[leftBack] = drivetrainSpeed - errorSpeed;
-        } else {
-            motorsForward(drivetrainSpeed); //If totally straight, go straight.
-        }
-    }
+	if(SensorValue[rightEncoder] > SensorValue[leftEncoder]) { //If right moved more, slow it.
+		motor[rightFront] = drivetrainSpeed - errorSpeed;
+		motor[rightBack] = drivetrainSpeed - errorSpeed;
+		} else {
+		if(SensorValue[rightEncoder] < SensorValue[leftEncoder]) { //Left moved more?  Slow it.
+			motor[leftFront] = drivetrainSpeed - errorSpeed;
+			motor[leftBack] = drivetrainSpeed - errorSpeed;
+			} else {
+			motorsForward(drivetrainSpeed); //If totally straight, go straight.
+		}
+	}
 }
 
 
 
 /*void pidDrivetrainControl() {
- runTimer = true; //Give timer permission to run
- while(<active> for some reason) {
- if(currentTimeReading != null) { //If generated a second reading
- leftReadingDiff /= timeDiff; //Calculate velocity of the sides in terms of degrees per ms
- rightReadingDiff /= timeDiff;
+runTimer = true; //Give timer permission to run
+while(<active> for some reason) {
+if(currentTimeReading != null) { //If generated a second reading
+leftReadingDiff /= timeDiff; //Calculate velocity of the sides in terms of degrees per ms
+rightReadingDiff /= timeDiff;
 
- abs(leftReadingDiff - rightReadingDiff); //Error of velocities
- }
+abs(leftReadingDiff - rightReadingDiff); //Error of velocities
+}
 
- }
- runTimer = false; //Turn timer off
- }*/
+}
+runTimer = false; //Turn timer off
+}*/
 
 task checkTimer1() {
-    /*while(true) {
-     if(runTimer == true) {
-     ClearTimer[T1]; //Reset Timer
-     initialTimeReading = time1[T1]; //Take start time reading
-     resetEncoders(); //Reset Encoders
-     initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
-     initialRightEncoderReading = SensorValue[rightEncoder];
-     while(runTimer == true) {
-     if( (time1[T1] - initialTimeReading) > 100) { //If time difference is greater than 100ms
-     currentTimeReading = time1[T1]; //Take time value
-     currentLeftEncoderReading = SensorValue[leftEncoder]; //Take encoder values
-     currentRightEncoderReading = SensorValue[rightEncoder];
+	/*while(true) {
+	if(runTimer == true) {
+	ClearTimer[T1]; //Reset Timer
+	initialTimeReading = time1[T1]; //Take start time reading
+	resetEncoders(); //Reset Encoders
+	initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
+	initialRightEncoderReading = SensorValue[rightEncoder];
+	while(runTimer == true) {
+	if( (time1[T1] - initialTimeReading) > 100) { //If time difference is greater than 100ms
+	currentTimeReading = time1[T1]; //Take time value
+	currentLeftEncoderReading = SensorValue[leftEncoder]; //Take encoder values
+	currentRightEncoderReading = SensorValue[rightEncoder];
 
-     timeDiff = currentTimeReading - initialTimeReading; //Time diff
-     leftReadingDiff = currentLeftEncoderReading - initialLeftEncoderReading; //Encoders diff
-     rightReadingDiff = currentRightEncoderReading - initialRightEncoderReading;
+	timeDiff = currentTimeReading - initialTimeReading; //Time diff
+	leftReadingDiff = currentLeftEncoderReading - initialLeftEncoderReading; //Encoders diff
+	rightReadingDiff = currentRightEncoderReading - initialRightEncoderReading;
 
-     ClearTimer[T1]; //Reset Timer
-     initialTimeReading = time1[T1]; //Take start time reading
-     resetEncoders(); //Reset Encoders
-     initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
-     initialRightEncoderReading = SensorValue[rightEncoder];
-     }
-     wait1Msec(10); //Wait 10 ms before restarting this loop
-     }
-     } else {
-     wait1Msec(10); //Wait 10 ms before restarting this loop
-     }*/
+	ClearTimer[T1]; //Reset Timer
+	initialTimeReading = time1[T1]; //Take start time reading
+	resetEncoders(); //Reset Encoders
+	initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
+	initialRightEncoderReading = SensorValue[rightEncoder];
+	}
+	wait1Msec(10); //Wait 10 ms before restarting this loop
+	}
+	} else {
+	wait1Msec(10); //Wait 10 ms before restarting this loop
+	}*/
 }
 
 void motorsStop() { //Stop drivetrain
-    motor[rightFront] = 0;
-    motor[rightBack] = 0;
-    motor[leftFront] = 0;
-    motor[leftBack] = 0;
+	motor[rightFront] = 0;
+	motor[rightBack] = 0;
+	motor[leftFront] = 0;
+	motor[leftBack] = 0;
 }
 
 void allStop() { //Stop all motors
-    motor[rightFront] = 0;
-    motor[rightBack] = 0;
-    motor[leftFront] = 0;
-    motor[leftBack] = 0;
-    motor[mobileGoal] = 0;
-    motor[armLeft] = 0;
-    motor[armRight] = 0;
-    motor[claw] = 0;
+	motor[rightFront] = 0;
+	motor[rightBack] = 0;
+	motor[leftFront] = 0;
+	motor[leftBack] = 0;
+	motor[mobileGoal] = 0;
+	motor[armLeft] = 0;
+	motor[armRight] = 0;
+	motor[claw] = 0;
 }
 
 int rotationCalculate(int orientatedSpeed) {
-    if (userBotOrientation == "forward") { //If forward, orientedSpeed is the normal.  Otherwise, make backwards be forwards.
-        return orientatedSpeed;
-    } else {
-        orientatedSpeed *= -1;
-        return orientatedSpeed;
-    }
+	if (userBotOrientation == "forward") { //If forward, orientedSpeed is the normal.  Otherwise, make backwards be forwards.
+		return orientatedSpeed;
+		} else {
+		orientatedSpeed *= -1;
+		return orientatedSpeed;
+	}
 }
 
 void joystickControl() { //Joystick control for drivetrain
-    if (userBotOrientation == "forward") {
-        motor[rightFront] = vexRT[rightDrivetrainCtrl] / userSpeedFactor;
-        motor[rightBack] = vexRT[rightDrivetrainCtrl] / userSpeedFactor;
-        motor[leftFront] = vexRT[leftDrivetrainCtrl] / userSpeedFactor;
-        motor[leftBack] = vexRT[leftDrivetrainCtrl] / userSpeedFactor;
-    } else {
-        motor[rightFront] = (-vexRT[leftDrivetrainCtrl]) / userSpeedFactor;
-        motor[rightBack] = (-vexRT[leftDrivetrainCtrl]) / userSpeedFactor;
-        motor[leftFront] = (-vexRT[rightDrivetrainCtrl]) / userSpeedFactor;
-        motor[leftBack] = (-vexRT[rightDrivetrainCtrl]) / userSpeedFactor;
-    }
+	if (userBotOrientation == "forward") {
+		motor[rightFront] = vexRT[rightDrivetrainCtrl] / userSpeedFactor;
+		motor[rightBack] = vexRT[rightDrivetrainCtrl] / userSpeedFactor;
+		motor[leftFront] = vexRT[leftDrivetrainCtrl] / userSpeedFactor;
+		motor[leftBack] = vexRT[leftDrivetrainCtrl] / userSpeedFactor;
+		} else {
+		motor[rightFront] = (-vexRT[leftDrivetrainCtrl]) / userSpeedFactor;
+		motor[rightBack] = (-vexRT[leftDrivetrainCtrl]) / userSpeedFactor;
+		motor[leftFront] = (-vexRT[rightDrivetrainCtrl]) / userSpeedFactor;
+		motor[leftBack] = (-vexRT[rightDrivetrainCtrl]) / userSpeedFactor;
+	}
 }
 // -- End Define Functions --
 
@@ -197,22 +197,22 @@ void joystickControl() { //Joystick control for drivetrain
 // -- Pre-autonomous task --
 void pre_auton()
 {
-    // Set bStopTasksBetweenModes to false if you want to keep user created tasks
-    // running between Autonomous and Driver controlled modes. You will need to
-    // manage all user created tasks if set to false.
-    bStopTasksBetweenModes = true;
+	// Set bStopTasksBetweenModes to false if you want to keep user created tasks
+	// running between Autonomous and Driver controlled modes. You will need to
+	// manage all user created tasks if set to false.
+	bStopTasksBetweenModes = true;
 
-    // Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
-    // used by the competition include file, for example, you might want
-    // to display your team name on the LCD in this function.
-    // bDisplayCompetitionStatusOnLcd = false;
+	// Set bDisplayCompetitionStatusOnLcd to false if you don't want the LCD
+	// used by the competition include file, for example, you might want
+	// to display your team name on the LCD in this function.
+	// bDisplayCompetitionStatusOnLcd = false;
 
-    // All activities that occur before the competition starts
-    // Example: clearing encoders, setting servo positions, ...
+	// All activities that occur before the competition starts
+	// Example: clearing encoders, setting servo positions, ...
 
-    resetEncoders();
+	resetEncoders();
 
-    startTask(checkTimer1); //Start checking the timer
+	startTask(checkTimer1); //Start checking the timer
 }
 // -- End Pre-autonomous task --
 
@@ -229,25 +229,25 @@ void pre_auton()
 // -- Main autonomous task --
 task autonomous()
 {
-    /* 4.25 in diameter wheels
-     Circumference = Diameter * pi
-     Circumference = 13.345 in
-     4.5 ft to mobile goal --> 54 inches
-     4.04646 rotationss
-     1457 degrees
-     */
+	/* 4.25 in diameter wheels
+	Circumference = Diameter * pi
+	Circumference = 13.345 in
+	4.5 ft to mobile goal --> 54 inches
+	4.04646 rotationss
+	1457 degrees
+	*/
 
-    // resetEncoders() performed in pre autonomous
-    /*while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) { //Move distance to goal
-        //motorsForward(127);
-        //motorsForwardAutoStraighten();
-    }*/
+	// resetEncoders() performed in pre autonomous
+	/*while(SensorValue[rightEncoder] < 1457 || SensorValue[leftEncoder] < 1457) { //Move distance to goal
+	//motorsForward(127);
+	//motorsForwardAutoStraighten();
+	}*/
 
-    clearTimer(T1);
-    while (time1[T1] < 7000) {
-    	motorsForward(127);
-    }
-    allStop();
+	clearTimer(T1);
+	while (time1[T1] < 7000) {
+		motorsForward(127);
+	}
+	allStop();
 
 }
 // -- End autonomous task --
@@ -263,48 +263,58 @@ task autonomous()
 /*---------------------------------------------------------------------------*/
 // -- Need to add limit switches to robot and then add code for mobile goal lift --
 
+task simultaneousArm() {
+	while(true) {
+		if (vexRT[armUpCtrl] == 1) {
+			motor[armLeft] = rotationCalculate(userArmSpeed);
+			motor[armRight] = rotationCalculate(userArmSpeed);
+			} else if (vexRT[armDownCtrl] == 1) {
+			motor[armLeft] = -rotationCalculate(userArmSpeed);
+			motor[armRight] = -rotationCalculate(userArmSpeed);
+			} else {
+			motor[armLeft] = 0;
+			motor[armRight] = 0;
+		}
+	}
+}
+
+task simultaneousRotation() {
+	while(true) {
+		if (vexRT[rotationSwitchCtrl] == 1) { //Swap rotation -- **NEEDS REWORK**
+			if(userBotOrientation == "forward") { //If forward, switch to back.  Otherwise, switch back to forward.
+				userBotOrientation = "back";
+				} else {
+				userBotOrientation = "forward";
+			}
+		}
+	}
+}
+
 // -- Start User Control Task --
 task usercontrol()
 {
-    while (true) {
+	startTask(simultaneousArm);
+	startTask(simultaneousRotation);
+	while (true) {
 
-        if (vexRT[rotationSwitchCtrl] == 1) { //Swap rotation -- **NEEDS REWORK**
-            if(userBotOrientation == "forward") { //If forward, switch to back.  Otherwise, switch back to forward.
-                userBotOrientation = "back";
-            } else {
-                userBotOrientation = "forward";
-            }
-        }
+		joystickControl();
 
-        joystickControl();
+		if (vexRT[mobileGoalUpCtrl] == 1) {             //If control to move mobile goal up, then move it up!
+			motor[mobileGoal] = userMobileGoalSpeed;
+			} else if (vexRT[mobileGoalDownCtrl] == 1) {    //Else, check if it should go down
+			motor[mobileGoal] = -userMobileGoalSpeed;
+			} else {                                        //If neither up nor down, keep it off.
+			motor[mobileGoal] = 0;
+		}
 
-        if (vexRT[mobileGoalUpCtrl] == 1) {             //If control to move mobile goal up, then move it up!
-            motor[mobileGoal] = userMobileGoalSpeed;
-        } else if (vexRT[mobileGoalDownCtrl] == 1) {    //Else, check if it should go down
-            motor[mobileGoal] = -userMobileGoalSpeed;
-        } else {                                        //If neither up nor down, keep it off.
-            motor[mobileGoal] = 0;
-        }
+		if (vexRT[clawOpenCtrl] == 1) {
+			motor[claw] = userClawSpeed;
+			} else if (vexRT[clawCloseCtrl] == 1) {
+			motor[claw] = -userClawSpeed;
+			} else {
+			motor[claw] = 0;
+		}
 
-        if (vexRT[armUpCtrl] == 1) {
-            motor[armLeft] = rotationCalculate(userArmSpeed);
-            motor[armRight] = rotationCalculate(userArmSpeed);
-        } else if (vexRT[armDownCtrl] == 1) {
-            motor[armLeft] = -rotationCalculate(userArmSpeed);
-            motor[armRight] = -rotationCalculate(userArmSpeed);
-        } else {
-            motor[armLeft] = 0;
-            motor[armRight] = 0;
-        }
-
-        if (vexRT[clawOpenCtrl] == 1) {
-            motor[claw] = userClawSpeed;
-        } else if (vexRT[clawCloseCtrl] == 1) {
-            motor[claw] = -userClawSpeed;
-        } else {
-            motor[claw] = 0;
-        }
-
-    }
+	}
 }
 // -- End User Control Task --
