@@ -89,7 +89,7 @@ abs(leftReadingDiff - rightReadingDiff); //Error of velocities
 runTimer = false; //Turn timer off
 }*/
 
-void motorsStop() { //Stop drivetrain
+void motodrivetrainStopsStop() { //Stop drivetrain
 	motor[right] = 0;
 	motor[left] = 0;
 }
@@ -112,8 +112,43 @@ int rotationCalculate(int orientatedSpeed) {
 }
 
 void joystickControl() { //Joystick control for drivetrain
-		motor[right] = rotationCalculate(vexRT[rightDrivetrainCtrl]);
-		motor[left] = rotationCalculate(vexRT[leftDrivetrainCtrl]);
+	motor[right] = rotationCalculate(vexRT[rightDrivetrainCtrl]);
+	motor[left] = rotationCalculate(vexRT[leftDrivetrainCtrl]);
+}
+
+void autonomousStraight(int degreesRotation) {
+	while (currentLeftEncoderReading < degreesRotation) {
+		if (SensorValue[leftEncoder] < SensorValue[rightEncoder]) {
+			leftMotors(normalSpeed);
+			rightMotors(slowSpeed);
+		}
+
+		if (SensorValue[leftEncoder] > SensorValue[rightEncoder]) {
+			leftMotors(slowSpeed);
+			rightMotors(normalSpeed);
+		}
+
+		if (SensorValue[leftEncoder] == SensorValue[rightEncoder]) {
+			leftMotors(normalSpeed);
+			rightMotors(normalSpeed);
+		}
+	}
+}
+
+void autonomousTurn(int degreesRotation) {
+	if(degreesRotation > gyroReading) {
+		while (gyroReading < degreesRotation) {
+			leftMotors(normalSpeed);
+			rightMotors(-normalSpeed);
+		}
+		} else {
+		while (gyroReading > degreesRotation) {
+			leftMotors(-normalSpeed);
+			rightMotors(normalSpeed);
+		}
+	}
+	drivetrainStop();
+
 }
 // -- End Define Functions --
 
@@ -268,25 +303,12 @@ task autonomous()
 {
 	startTask(getSensorValues);
 	while (true) {
-		while (currentLeftEncoderReading < 1192) {
-			if (SensorValue[leftEncoder] < SensorValue[rightEncoder]) {
-				leftMotors(normalSpeed);
-				rightMotors(slowSpeed);
-			}
 
-			if (SensorValue[leftEncoder] > SensorValue[rightEncoder]) {
-				leftMotors(slowSpeed);
-				rightMotors(normalSpeed);
-			}
+		autonomousStraight(360); //Go straight for 360 deg of rotation
+		autonomousTurn(360); //Turn 360 deg.
 
-			if (SensorValue[leftEncoder] == SensorValue[rightEncoder]) {
-				leftMotors(normalSpeed);
-				rightMotors(normalSpeed);
-			}
-		}
-		motorsStop();
 	}
-
+	drivetrainStop();
 }
 // -- End autonomous task --
 
@@ -303,13 +325,13 @@ task autonomous()
 // -- Start User Control Task --
 task usercontrol()
 {
-	startTask(simultaneousMainArm);
-	startTask(simultaneousClawArm);
-	startTask(simultaneousClaw);
-	startTask(simultaneousRotation);
-	startTask(simultaneousMobileGoal);
-	while (true) {
-		joystickControl();
-	}
+startTask(simultaneousMainArm);
+startTask(simultaneousClawArm);
+startTask(simultaneousClaw);
+startTask(simultaneousRotation);
+startTask(simultaneousMobileGoal);
+while (true) {
+	joystickControl();
+}
 }
 // -- End User Control Task --
