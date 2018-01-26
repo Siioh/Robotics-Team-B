@@ -1,9 +1,11 @@
 #pragma config(Sensor, in1,    gyroscope,      sensorGyro)
 #pragma config(Sensor, dgtl1,  rightEncoder,   sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  leftEncoder,    sensorQuadEncoder)
-#pragma config(Motor,  port2,           left,          tmotorVex393_MC29, openLoop)
-#pragma config(Motor,  port3,           right,         tmotorVex393_MC29, openLoop, reversed)
-#pragma config(Motor,  port6,           mobileGoal,    tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port2,           right,         tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port3,           left,          tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port4,           mobileGoalLeft, tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port5,           mobileGoalRight, tmotorVex393_MC29, openLoop, reversed)
+#pragma config(Motor,  port6,            ,             tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port7,           mainArm,       tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port8,           clawArm,       tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port9,           claw,          tmotorVex393_MC29, openLoop, reversed)
@@ -238,11 +240,14 @@ task simultaneousClaw() {
 task simultaneousMobileGoal() {
 	while (true) {
 		if (vexRT[mobileGoalUpCtrl] == 1) {             //If control to move mobile goal up, then move it up!
-			motor[mobileGoal] = userMobileGoalSpeed;
+			motor[mobileGoalLeft] = userMobileGoalSpeed;
+			motor[mobileGoalRight] = userMobileGoalSpeed;
 			} else if (vexRT[mobileGoalDownCtrl] == 1) {    //Else, check if it should go down
-			motor[mobileGoal] = -userMobileGoalSpeed;
+			motor[mobileGoalLeft] = -userMobileGoalSpeed;
+			motor[mobileGoalRight] = -userMobileGoalSpeed;
 			} else {                                        //If neither up nor down, keep it off.
-			motor[mobileGoal] = 0;
+			motor[mobileGoalLeft] = 0;
+			motor[mobileGoalRight] = 0;
 		}
 	}
 }
@@ -327,15 +332,15 @@ task autonomous()
 // -- Start User Control Task --
 task usercontrol()
 {
-startTask(simultaneousMainArm);
-startTask(simultaneousClawArm);
-startTask(simultaneousClaw);
-startTask(simultaneousRotation);
-startTask(simultaneousMobileGoal);
-resetSensors();
-startTask(getSensorValues);
-while (true) {
-	joystickControl();
-}
+	startTask(simultaneousMainArm);
+	startTask(simultaneousClawArm);
+	startTask(simultaneousClaw);
+	startTask(simultaneousRotation);
+	startTask(simultaneousMobileGoal);
+	resetSensors();
+	startTask(getSensorValues);
+	while (true) {
+		joystickControl();
+	}
 }
 // -- End User Control Task --
