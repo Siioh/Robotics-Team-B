@@ -56,9 +56,10 @@ string rotationSwitchCtrl = Btn8D;
 // -- End Define Controls --
 
 // -- Define functions --
-void resetEncoders() {
+void resetSensors() {
 	SensorValue[leftEncoder] = 0; //Reset drivetrain encoders
 	SensorValue[rightEncoder] = 0;
+	SensorValue[gyroscope] = 0; //Reset gyro
 }
 
 /*void motorsForwardAutoStraighten(int drivetrainSpeed) {
@@ -89,7 +90,7 @@ abs(leftReadingDiff - rightReadingDiff); //Error of velocities
 runTimer = false; //Turn timer off
 }*/
 
-void motodrivetrainStopsStop() { //Stop drivetrain
+void drivetrainStop() { //Stop drivetrain
 	motor[right] = 0;
 	motor[left] = 0;
 }
@@ -159,7 +160,7 @@ task checkTimer1() {
 	if(runTimer == true) {
 	ClearTimer[T1]; //Reset Timer
 	initialTimeReading = time1[T1]; //Take start time reading
-	resetEncoders(); //Reset Encoders
+	resetSensors(); //Reset Encoders
 	initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
 	initialRightEncoderReading = SensorValue[rightEncoder];
 	while(runTimer == true) {
@@ -174,7 +175,7 @@ task checkTimer1() {
 
 	ClearTimer[T1]; //Reset Timer
 	initialTimeReading = time1[T1]; //Take start time reading
-	resetEncoders(); //Reset Encoders
+	resetSensors(); //Reset Encoders
 	initialLeftEncoderReading = SensorValue[leftEncoder]; //Take start encoder readings
 	initialRightEncoderReading = SensorValue[rightEncoder];
 	}
@@ -251,6 +252,7 @@ task getSensorValues() {
 		gyroReading = SensorValue[gyroscope];
 		currentRightEncoderReading = SensorValue[rightEncoder];
 		currentLeftEncoderReading = -SensorValue[leftEncoder];
+		wait1Msec(50);
 	}
 }
 // -- End define tasks --
@@ -281,7 +283,7 @@ void pre_auton()
 	// All activities that occur before the competition starts
 	// Example: clearing encoders, setting servo positions, ...
 
-	resetEncoders();
+	resetSensors();
 	SensorValue[gyroscope] = 0;
 
 	startTask(checkTimer1); //Start checking the timer
@@ -330,6 +332,8 @@ startTask(simultaneousClawArm);
 startTask(simultaneousClaw);
 startTask(simultaneousRotation);
 startTask(simultaneousMobileGoal);
+resetSensors();
+startTask(getSensorValues);
 while (true) {
 	joystickControl();
 }
