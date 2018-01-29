@@ -1,4 +1,6 @@
 #pragma config(Sensor, in1,    gyroscope,      sensorGyro)
+#pragma config(Sensor, in2,    leftAngle,      sensorPotentiometer)
+#pragma config(Sensor, in3,    rightAngle,     sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  rightEncoder,   sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  leftEncoder,    sensorQuadEncoder)
 #pragma config(Motor,  port2,           right,         tmotorVex393_MC29, openLoop, reversed)
@@ -141,13 +143,13 @@ void autonomousStraight(int degreesRotation) {
 void autonomousTurn(int degreesRotation) {
 	if(degreesRotation > gyroReading) {
 		while (gyroReading < degreesRotation) {
-			leftMotors(normalSpeed);
-			rightMotors(-normalSpeed);
-		}
-		} else {
-		while (gyroReading > degreesRotation) {
 			leftMotors(-normalSpeed);
 			rightMotors(normalSpeed);
+		}
+	} else {
+		while (gyroReading > degreesRotation) {
+			leftMotors(normalSpeed);
+			rightMotors(-normalSpeed);
 		}
 	}
 	drivetrainStop();
@@ -255,8 +257,8 @@ task simultaneousMobileGoal() {
 task getSensorValues() {
 	while (true) {
 		gyroReading = SensorValue[gyroscope];
-		currentRightEncoderReading = SensorValue[rightEncoder];
-		currentLeftEncoderReading = -SensorValue[leftEncoder];
+		currentRightEncoderReading = -SensorValue[rightEncoder];
+		currentLeftEncoderReading = SensorValue[leftEncoder];
 		wait1Msec(50);
 	}
 }
@@ -332,7 +334,7 @@ task autonomous()
 // -- Start User Control Task --
 task usercontrol()
 {
-	startTask(simultaneousMainArm);
+	/*startTask(simultaneousMainArm);
 	startTask(simultaneousClawArm);
 	startTask(simultaneousClaw);
 	startTask(simultaneousRotation);
@@ -341,6 +343,11 @@ task usercontrol()
 	startTask(getSensorValues);
 	while (true) {
 		joystickControl();
-	}
+	}*/
+	resetSensors();
+	startTask(getSensorValues);
+	//autonomousStraight(360); //Go straight for 360 deg of rotation
+	autonomousTurn(2500);
+	drivetrainStop();
 }
 // -- End User Control Task --
